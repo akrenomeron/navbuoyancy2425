@@ -1,0 +1,15 @@
+# include <Wire.h>
+
+void setup() {
+  Wire.begin(); // Initialize I2C communication
+  Serial.begin(9600); // debugging communication
+}
+
+void loop() {
+  Wire.beginTransmission(0x21);
+  Wire.write(0x01);
+  Wire.endTransmission();
+
+  delay(1000);
+}
+
