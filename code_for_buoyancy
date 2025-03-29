@@ -17,6 +17,7 @@ def main():
 
       # Display the result
       print(f"{object_name}: {buoyant_force:.2f} kg")
+      print("hello world")
 
 # Run the program
 main()
