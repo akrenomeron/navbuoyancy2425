@@ -33,17 +33,19 @@ void loop() {
   Serial.print(temperature);
   Serial.println(" °C");
 
-  // Delay for readability
+  // Delay for readability msec
   delay(1000);
 }
 
 float readSensorData(uint8_t command) {
+// setup to read pressure or temperature
   Wire.beginTransmission(sensorAddress);
   Wire.write(command);
   Wire.endTransmission();
 
   delay(10);
 
+// actual read from the sensor
   Wire.requestFrom(sensorAddress, 3);
   if (Wire.available() == 3) {
     uint32_t data = 0;
@@ -60,5 +62,5 @@ float readSensorData(uint8_t command) {
       return data / 100.0; 
     }
   }
-  return 0.0;a
+  return 0.0;
 }
