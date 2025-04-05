@@ -1,0 +1,35 @@
+int IN1pin = 8;
+int IN2pin = 7;
+int ENApin = 9;
+
+
+int motorSpeed;
+
+
+void setup() {
+ // put your setup code here, to run once:
+ pinMode(IN1pin, OUTPUT);
+ pinMode(IN2pin, OUTPUT);
+ pinMode(ENApin, OUTPUT);
+}
+
+
+void loop() {
+ // put your main code here, to run repeatedly:
+ digitalWrite(IN1pin, HIGH);
+ digitalWrite(IN2pin, LOW);
+
+
+ for (motorSpeed = 70; motorSpeed <=255; motorSpeed = motorSpeed + 10) {
+   analogWrite = (ENApin, motorSpeed);
+   delay(100);
+ }
+ delay(1000);
+
+
+ for (motorSpeed = 255; motorSpeed >= 70; motorSpeed = motorSpeed - 10) {
+   analogWrite(ENApin, motorSpeed);
+   delay(100);
+ }
+ delay(1000);
+}
