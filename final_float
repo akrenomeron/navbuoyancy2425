@@ -1,0 +1,161 @@
+
+
+int IN1pin = 8;
+int IN2pin = 7;
+int ENApin = 9;
+
+
+#include <Wire.h>
+#include <MS5837.h>
+
+MS5837 sensor;
+
+// Sensor constants
+const int sensorAddress = 0x76;   // Default I²C address for the Bar30
+const int cmdPressure = 0x40;     // Command to request pressure data
+const int cmdTemperature = 0x50;  // Command to request temperature data
+
+// Variables to store pressure and temperature
+float pressure = 5;
+float temperature = 6;
+float surface_pressure = 0;
+float current_pressure = 0;
+
+
+void setup() {
+  // put your setup code here, to run once:
+  //Wire.begin();
+  delay(1000);
+
+  // Initialize serial communication
+  Serial.begin(9600);
+  delay(500);
+
+  Serial.println("STARTING CODE");
+  delay(1000);
+
+  Wire.setClock(10000);  // 100 kHz, add after Wire.begin()
+
+  // motor test
+  Serial.println("Activating Motor");
+  pinMode(9, OUTPUT);     // Replace 8 with your desired pin number
+  digitalWrite(9, HIGH);  // Set pin 8 HIGH (5V)
+  delay(500);             // Wait 1 second
+  digitalWrite(9, LOW);   // Set pin 8 LOW (0V)
+  delay(1000);            // Wait 1 second
+
+  // Initialize I²C communication
+  if (!sensor.init()) {
+    Serial.println("Sensor not found. Check wiring.");
+    while (1)
+      ;
+  }
+
+  Serial.println("Found sensor");
+  delay(5000);
+
+
+  sensor.setModel(MS5837::MS5837_02BA);  // BAR02 uses the 02BA model
+  sensor.setFluidDensity(997);           // kg/m^3 for freshwater
+
+  Serial.println("Bar02 Sensor Initialized!");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  Serial.println("Press Enter When Ready");
+  while (Serial.available() == 0) {
+  }
+
+//MEASURE SURFACE PRESSURE
+  sensor.read();
+
+  Serial.print("Surface Pressure: ");
+  surface_pressure = sensor.pressure();
+  Serial.print(surface_pressure);  // mbar
+  Serial.println(" mbar");
+
+  Serial.print("Temperature: ");
+  Serial.print(sensor.temperature());  // deg C
+  Serial.println(" C \n");
+  
+  //DIVE
+  Serial.println("Going Down...");
+  pinMode(9, OUTPUT);     // Replace 8 with your desired pin number
+  digitalWrite(9, HIGH);  // Set pin 8 HIGH (5V)
+  delay(500);             // Wait 1 second
+  
+  for (int i = 0; i < 4; i++) {
+    
+    pinMode(9, OUTPUT);     // Replace 8 with your desired pin number
+    digitalWrite(9, HIGH);  // Set pin 8 HIGH (5V)
+    sensor.read();
+    current_pressure = sensor.pressure() - surface_pressure;
+
+    Serial.print("Pressure: ");
+    Serial.print(current_pressure);  // mbar
+    Serial.println(" mbar");
+
+
+    Serial.print("Depth: ");
+    Serial.print(current_pressure * 100 / (1000 * 9.81)); //formula for depth
+    Serial.println(" cm");
+    
+    Serial.print("Temperature: ");
+    Serial.print(sensor.temperature());  // deg C
+    Serial.println(" C \n");
+
+
+
+    delay(1500);  // wait 1 and a half seconds (1500 milliseconds)
+  }
+
+  digitalWrite(9, LOW);   // Set pin 8 LOW (0V)
+  delay(10000);            // Wait 1 second
+
+
+
+  /* // Read pressure
+  pressure = readSensorData(cmdPressure);
+  Serial.println("Pressure: ");
+  Serial.println(pressure);
+  Serial.println(" mbar");
+
+  // Read temperature
+    temperature = readSensorData(cmdTemperature);
+    Serial.println("Temperature: ");
+    Serial.println(temperature);
+    Serial.println(" °C");
+
+  // Delay for readability msec
+  delay(1000);
+*/
+}
+
+float readSensorData(int command) {
+  // setup to read pressure or temperature
+  //Wire.beginTransmission(sensorAddress);
+  //Wire.write(command);
+  //Wire.endTransmission();
+
+  delay(1000);
+  /*
+// actual read from the sensor
+  Wire.requestFrom(sensorAddress, 3);
+  if (Wire.available() == 3) {
+    uint32_t data = 0;
+    data |= Wire.read();
+    data <<= 8;
+    data |= Wire.read();
+    data <<= 8;
+    data |= Wire.read();
+
+    
+    if (command == cmdPressure) {
+      return data / 10.0;
+    } else if (command == cmdTemperature) {
+      return data / 100.0; 
+    }
+  } */
+  return 0.0;
+}
